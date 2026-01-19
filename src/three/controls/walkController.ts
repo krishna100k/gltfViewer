@@ -2,7 +2,7 @@ import { PointerLockControls } from "three/examples/jsm/Addons.js";
 import type { CameraManager } from "../cameraManager";
 import { InputsManager } from "./inputsManager";
 import { Vector3 } from "three";
-import { Constants } from "../../utils/constants";
+import { configStore } from "../../utils/configStore";
 
 export class WalkController {
     controls: PointerLockControls
@@ -11,8 +11,8 @@ export class WalkController {
 
     velocity = new Vector3();
     direction = new Vector3();
-    inputSpeed = Constants.speed;
-    speed = Constants.speed;
+    inputSpeed = configStore.speed;
+    speed = configStore.speed;
 
     constructor(cameraManager: CameraManager, container: HTMLElement) {
         this.controls = new PointerLockControls(cameraManager.camera, container);
@@ -44,7 +44,7 @@ export class WalkController {
             this.controls.object.position.y += 1 * this.speed * delta;
         }
 
-        if(this.inputsManager.isPressed("ControlLeft")){
+        if(this.inputsManager.isPressed("KeyC")){
             this.controls.object.position.y -= 1 * this.speed * delta;
         }
     }

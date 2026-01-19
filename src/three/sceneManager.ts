@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { configStore } from "../utils/configStore";
 
 export class SceneManager{
     scene : THREE.Scene
     constructor(){
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x202020);
+        this.scene.background = new THREE.Color(configStore.backgroundColor);
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight);

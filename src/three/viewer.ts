@@ -7,7 +7,9 @@ import { Box3, Clock, Mesh, MeshStandardMaterial, Object3D, Vector2, Vector3, ty
 import { OrbitController } from "./controls/orbitcontroller";
 import { WalkController } from "./controls/walkController";
 import { RaycasterManager } from "./intersections/raycasterManager";
-import { Constants } from "../utils/constants";
+import { configStore } from "../utils/configStore";
+import { SolarSystem } from "./solarSystem";
+import type { Dispatch, SetStateAction } from "react";
 
 
 export class Viewer {
@@ -16,6 +18,8 @@ export class Viewer {
     rendererManager !: RendererManager
     raycastermanager !: RaycasterManager
     loaderManager: LoaderManager
+    solarSystemManager !: SolarSystem
+
     loadedModel?: Group
 
     //controls
@@ -36,6 +40,7 @@ export class Viewer {
         this.rendererManager = new RendererManager(container);
         this.loaderManager = new LoaderManager();
         this.raycastermanager = new RaycasterManager(this.cameraManager, container);
+        this.solarSystemManager = new SolarSystem(this.sceneManager);
 
         this.orbitController = new OrbitController(this.cameraManager, container);
         this.walkController = new WalkController(this.cameraManager, container);
@@ -43,13 +48,15 @@ export class Viewer {
         this.walkController.controls.addEventListener('unlock', this.exitWalkMode);
 
         this.animate();
-        this.loadModel("/models/default.glb", "glb");
+        // this.loadModel("/models/default.glb", "glb");
 
         const canvas = this.rendererManager.renderer.domElement;
         canvas.addEventListener("pointerdown", this.onPointerDown);
         window.addEventListener("pointerup", this.onPointerUp);
 
     }
+
+
 
     // arrow function used deliberately because normal function does not carry "this", then
     // this.animate() does not refer to viewer.animate in that case
@@ -65,13 +72,15 @@ export class Viewer {
         }
     }
 
-    loadModel(url: string, ext: string) {
+    loadModel(url: string, ext: string, setLoadingModelState : (loading : boolean) => void) {
         this.loaderManager.load(url, ext, (gltf: GLTF) => {
+            this.solarSystemManager.clear();
             if (this.loadedModel) this.sceneManager.scene.remove(this.loadedModel);
             this.loadedModel = undefined;
             this.frameModel(gltf.scene);
             this.sceneManager.add(gltf.scene);
             this.loadedModel = gltf.scene;
+            setLoadingModelState(false);
         })
     }
 
@@ -104,6 +113,8 @@ export class Viewer {
         model.position.sub(center);
 
         const maxSize = Math.max(size.x, size.y, size.z);
+
+        configStore.speed = maxSize * configStore.autoSppedCalculationPercentage;
 
         this.cameraManager.camera.position.set(
             0,
@@ -152,8 +163,19 @@ export class Viewer {
 
         const highlight = (mat: MeshStandardMaterial) => {
             const clone = mat.clone();
-            clone.emissive.set(Constants.selectionColor);
+
+            if (clone?.emissive) {
+                clone.emissive.set(configStore.selectionColor);
+                clone.emissiveIntensity = 1;
+            } else if (clone?.color) {
+                clone.color.set(configStore.selectionColor);
+            } else {
+                clone.opacity = 0.85;
+                clone.transparent = true;
+            }
+
             return clone;
+
         };
 
         mesh.material = Array.isArray(mesh.material)
@@ -161,5 +183,6 @@ export class Viewer {
             : highlight(mesh.material as MeshStandardMaterial);
 
         this.selectedObject = mesh;
+        console.log(this.selectedObject);
     }
 }
