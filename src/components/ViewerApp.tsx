@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react"
 import { Viewer } from "../three/viewer";
 import { configStore } from "../utils/configStore";
+import Loader from "./ui/Loader";
+import Sidenav from "./ui/Sidenav";
 
 
 const ViewerApp = () => {
@@ -44,7 +46,7 @@ const ViewerApp = () => {
 
         const file = files[0];
         const url = URL.createObjectURL(file);
-        const splittedFileName = file?.name.split('.')
+        const splittedFileName = file?.name.split('.');
         const ext = splittedFileName[splittedFileName.length - 1];
 
         setLoadingModel(true);
@@ -57,10 +59,16 @@ const ViewerApp = () => {
 
     return (
         <>
+            {loadingModel && <Loader />} 
             <button style={{position : 'absolute'}} onClick={toggleWalkMode}>Walk</button>
             <input min={1} value={configStore.speed} onChange={onInputSpeedChange} type="number" style={{position : 'absolute', left : "4rem"}} />
             <input type="file" style={{position : 'absolute', left : "15rem"}} onChange={onModelUpload} />
-            <div ref={containerRef} style={{ width: '100%', height: '100%' }}></div>
+            <Sidenav />
+            <div ref={containerRef} style={{
+                width: "100%",
+                height: "100%",
+            }}>
+            </div>
         </>
     )
 }

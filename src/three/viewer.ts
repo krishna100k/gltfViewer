@@ -9,7 +9,6 @@ import { WalkController } from "./controls/walkController";
 import { RaycasterManager } from "./intersections/raycasterManager";
 import { configStore } from "../utils/configStore";
 import { SolarSystem } from "./solarSystem";
-import type { Dispatch, SetStateAction } from "react";
 
 
 export class Viewer {
@@ -40,7 +39,7 @@ export class Viewer {
         this.rendererManager = new RendererManager(container);
         this.loaderManager = new LoaderManager();
         this.raycastermanager = new RaycasterManager(this.cameraManager, container);
-        this.solarSystemManager = new SolarSystem(this.sceneManager);
+        // this.solarSystemManager = new SolarSystem(this.sceneManager);
 
         this.orbitController = new OrbitController(this.cameraManager, container);
         this.walkController = new WalkController(this.cameraManager, container);
@@ -53,7 +52,6 @@ export class Viewer {
         const canvas = this.rendererManager.renderer.domElement;
         canvas.addEventListener("pointerdown", this.onPointerDown);
         window.addEventListener("pointerup", this.onPointerUp);
-
     }
 
 
@@ -74,7 +72,7 @@ export class Viewer {
 
     loadModel(url: string, ext: string, setLoadingModelState : (loading : boolean) => void) {
         this.loaderManager.load(url, ext, (gltf: GLTF) => {
-            this.solarSystemManager.clear();
+            // this.solarSystemManager.clear();
             if (this.loadedModel) this.sceneManager.scene.remove(this.loadedModel);
             this.loadedModel = undefined;
             this.frameModel(gltf.scene);
