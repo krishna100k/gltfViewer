@@ -11,6 +11,8 @@ const ViewerApp = () => {
     const [config, setConfig] = useState({...configStore});
     const [loadingModel, setLoadingModel] = useState<boolean>(false);
 
+    const uploadFileInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         if (!viewerRef.current && containerRef.current) {
             viewerRef.current = new Viewer(containerRef.current);
@@ -57,13 +59,16 @@ const ViewerApp = () => {
         setLoadingModel(loading);
     }
 
+    const onUploadClick = () => {
+        uploadFileInputRef.current?.click();
+    }
+
     return (
         <>
             {loadingModel && <Loader />} 
-            <button style={{position : 'absolute'}} onClick={toggleWalkMode}>Walk</button>
             <input min={1} value={configStore.speed} onChange={onInputSpeedChange} type="number" style={{position : 'absolute', left : "4rem"}} />
-            <input type="file" style={{position : 'absolute', left : "15rem"}} onChange={onModelUpload} />
-            <Sidenav />
+            <input ref={uploadFileInputRef} type="file" style={{position : 'absolute', left : "15rem", display : 'none'}} onChange={onModelUpload} />
+            <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
             <div ref={containerRef} style={{
                 width: "100%",
                 height: "100%",

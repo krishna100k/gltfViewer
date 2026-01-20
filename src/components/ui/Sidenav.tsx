@@ -1,23 +1,43 @@
 import { Drawer } from "@mui/material"
+import Tabs from "./Tabs/Tabs"
+import { TabsEnum } from "../../utils/tabsConfig"
+import { useSelector } from "react-redux"
+import type { RootState } from "../../redux/store"
+import SettingsTab from "./Tabs/SettingsTab"
+import DefaultModels from "./Tabs/DefaultModels"
 
-const Sidenav = () => {
+interface SideNavProps {
+    toggleWalkMode: () => void
+    onUploadClick : () => void
+}
+
+const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
+    const settings = useSelector((state: RootState) => state.settings)
     return (
         <>
             <Drawer
                 open={true}
                 hideBackdrop
                 variant="persistent"
+                anchor="right"
                 slotProps={{
                     paper: {
                         sx: {
                             backgroundColor: "#0F0F0F",
-                            color : "white",
-                            width : "350px"
+                            color: "white",
+                            width: "350px"
                         }
                     }
                 }}
             >
-                Hello
+                <div>
+                    <Tabs />
+                    {
+                        settings.selectedTab == TabsEnum.Settings ? <SettingsTab toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
+                            :
+                        settings.selectedTab == TabsEnum.DefaultModels && <DefaultModels />
+                    }
+                </div>
             </Drawer>
         </>
     )

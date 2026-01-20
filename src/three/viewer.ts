@@ -47,7 +47,6 @@ export class Viewer {
         this.walkController.controls.addEventListener('unlock', this.exitWalkMode);
 
         this.animate();
-        // this.loadModel("/models/default.glb", "glb");
 
         const canvas = this.rendererManager.renderer.domElement;
         canvas.addEventListener("pointerdown", this.onPointerDown);
@@ -72,7 +71,7 @@ export class Viewer {
 
     loadModel(url: string, ext: string, setLoadingModelState : (loading : boolean) => void) {
         this.loaderManager.load(url, ext, (gltf: GLTF) => {
-            // this.solarSystemManager.clear();
+            // this.solarSystemManager?.clear();
             if (this.loadedModel) this.sceneManager.scene.remove(this.loadedModel);
             this.loadedModel = undefined;
             this.frameModel(gltf.scene);
