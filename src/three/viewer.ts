@@ -44,13 +44,12 @@ export class Viewer {
         this.rendererManager = new RendererManager(container);
         this.loaderManager = new LoaderManager();
         this.raycastermanager = new RaycasterManager(this.cameraManager, container);
-        // this.solarSystemManager = new SolarSystem(this.sceneManager);
+        this.solarSystemManager = new SolarSystem(this.sceneManager);
 
         this.orbitController = new OrbitController(this.cameraManager, container);
         this.walkController = new WalkController(this.cameraManager, container);
 
         this.walkController.controls.addEventListener('unlock', this.exitWalkMode);
-
         this.animate();
 
         const canvas = this.rendererManager.renderer.domElement;
@@ -76,7 +75,7 @@ export class Viewer {
 
     loadModel(url: string, ext: string, setLoadingModelState: (loading: boolean) => void) {
         this.loaderManager.load(url, ext, (gltf: GLTF) => {
-            // this.solarSystemManager?.clear();
+            this.solarSystemManager?.clear();
             if (this.loadedModel) this.sceneManager.scene.remove(this.loadedModel);
             this.loadedModel = undefined;
             this.frameModel(gltf.scene);
@@ -94,17 +93,10 @@ export class Viewer {
 
     exitWalkMode = () => {
         this.walkMode = false;
-        store.dispatch(setSettings({sidenavOpen : true}));
+        store.dispatch(setSettings({ sidenavOpen: true }));
         this.orbitController.setEnabled(!this.walkMode);
+        this.orbitController.update();
         this.walkController.setEnabled(this.walkMode);
-    }
-
-    setInputSpeed(speed: number) {
-        this.walkController.inputSpeed = speed
-    }
-
-    getCurrentInputSpeed() {
-        return this.walkController.inputSpeed;
     }
 
     frameModel(model: Object3D) {
@@ -117,7 +109,7 @@ export class Viewer {
 
         const maxSize = Math.max(size.x, size.y, size.z);
 
-        store.dispatch(setSettings({speed : maxSize * this.settings.autoSppedCalculationPercentage}))
+        store.dispatch(setSettings({ speed: maxSize * this.settings.autoSppedCalculationPercentage }))
 
         this.cameraManager.camera.position.set(
             0,
@@ -186,6 +178,11 @@ export class Viewer {
             : highlight(mesh.material as MeshStandardMaterial);
 
         this.selectedObject = mesh;
-        console.log(this.selectedObject);
+    }
+
+
+    dispose() {
+        this.sceneManager.dispose();
+        this.rendererManager.dispose();
     }
 }

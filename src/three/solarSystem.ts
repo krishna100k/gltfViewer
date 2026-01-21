@@ -9,7 +9,7 @@ export class SolarSystem {
 
     constructor(sceneManager: SceneManager) {
         this.sceneManager = sceneManager
-        Array(200).fill(0).forEach(() => {
+        Array(10000).fill(0).forEach(() => {
             this.addStar();
         });
 
@@ -48,7 +48,7 @@ export class SolarSystem {
         const geometry = new THREE.SphereGeometry(0.25, 24, 24);
         const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const star = new THREE.Mesh(geometry, material);
-        const [x, y, z] = Array(3).fill(0).map(() => THREE.MathUtils.randFloatSpread(100));
+        const [x, y, z] = Array(3).fill(0).map(() => THREE.MathUtils.randFloatSpread(500));
         star.position.set(x, y, z);
         this.sceneManager.add(star);
         this.allStars.push(star);

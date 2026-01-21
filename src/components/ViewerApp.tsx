@@ -18,17 +18,18 @@ const ViewerApp = () => {
         if (!viewerRef.current && containerRef.current) {
             viewerRef.current = new Viewer(containerRef.current);
         }
+        return () => viewerRef.current?.dispose();
     }, [])
 
 
     const toggleWalkMode = () => {
-        dispatch(setSettings({sidenavOpen : false}));
+        dispatch(setSettings({ sidenavOpen: false }));
         viewerRef.current?.toggleWalkMode();
     }
 
-    const onModelUpload = (e : ChangeEvent<HTMLInputElement>) => {
+    const onModelUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
-        if(!files) return;
+        if (!files) return;
 
         const file = files[0];
         const url = URL.createObjectURL(file);
@@ -39,7 +40,7 @@ const ViewerApp = () => {
         viewerRef.current?.loadModel(url, ext, setLoadingModelState);
     }
 
-    const setLoadingModelState = (loading : boolean) => {
+    const setLoadingModelState = (loading: boolean) => {
         setLoadingModel(loading);
     }
 
@@ -49,9 +50,9 @@ const ViewerApp = () => {
 
     return (
         <>
-            {loadingModel && <Loader />} 
-            <input ref={uploadFileInputRef} type="file" style={{position : 'absolute', left : "15rem", display : 'none'}} onChange={onModelUpload} />
-            <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
+            {loadingModel && <Loader />}
+            <input ref={uploadFileInputRef} type="file" style={{ position: 'absolute', left: "15rem", display: 'none' }} onChange={onModelUpload} />
+            <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick={onUploadClick} />
             <div ref={containerRef} style={{
                 width: "100%",
                 height: "100%",

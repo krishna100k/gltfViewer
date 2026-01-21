@@ -18,7 +18,7 @@ const OrbitInput: React.FC<InputProps> = ({ type = "text", width = "auto", heigh
                 width : width,
                 height : height,
             }}
-            className="bg-[#1D3049] border-0 rounded-xs"
+            className="bg-[#1D3049] border-0 rounded-xs p-1"
             placeholder={placeholder}
             onChange={onChangeHandler && onChangeHandler}
         />

@@ -3,6 +3,7 @@ import type { CameraManager } from "../cameraManager";
 import { InputsManager } from "./inputsManager";
 import { Vector3 } from "three";
 import { store } from "../../redux/store";
+import { Constants } from "../../utils/constants";
 
 export class WalkController {
     controls: PointerLockControls
@@ -11,8 +12,6 @@ export class WalkController {
 
     velocity = new Vector3();
     direction = new Vector3();
-    inputSpeed = this.settings.speed;
-    speed = this.settings.speed;
 
     get settings() {
         return store.getState().settings;
@@ -29,27 +28,30 @@ export class WalkController {
     }
 
     update(delta: number) {
-        this.direction.set(0,0,0);
-        if (this.inputsManager.isPressed("KeyW")) {debugger;this.direction.z += 1};
+        this.direction.set(0, 0, 0);
+        if (this.inputsManager.isPressed("KeyW")) { this.direction.z += 1 };
         if (this.inputsManager.isPressed("KeyS")) this.direction.z -= 1;
         if (this.inputsManager.isPressed("KeyA")) this.direction.x -= 1;
         if (this.inputsManager.isPressed("KeyD")) this.direction.x += 1;
 
-        if(this.inputsManager.isPressed("ShiftLeft")){
-            this.speed = this.inputSpeed * 3;
-        }else{
-            this.speed = this.inputSpeed;
+        const baseSpeed = this.settings.speed;
+        const speed = this.inputsManager.isPressed("ShiftLeft")
+            ? baseSpeed * Constants.RunSpeed
+            : baseSpeed;
+
+        this.controls.moveForward(this.direction.z * speed * delta);
+        this.controls.moveRight(this.direction.x * speed * delta);
+
+        if (this.inputsManager.isPressed("Space")) {
+            this.controls.object.position.y += speed * delta;
         }
 
-        this.controls.moveForward(this.direction.z * this.speed * delta)
-        this.controls.moveRight(this.direction.x * this.speed * delta)
-
-        if(this.inputsManager.isPressed("Space")){
-            this.controls.object.position.y += 1 * this.speed * delta;
+        if (this.inputsManager.isPressed("KeyC")) {
+            this.controls.object.position.y -= speed * delta;
         }
+    }
 
-        if(this.inputsManager.isPressed("KeyC")){
-            this.controls.object.position.y -= 1 * this.speed * delta;
-        }
+    dispose() {
+        this.inputsManager.dispose();
     }
 }

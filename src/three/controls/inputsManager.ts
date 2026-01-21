@@ -1,7 +1,7 @@
 
-export class InputsManager{
-    keys : Record<string, boolean> = {}
-    constructor(){
+export class InputsManager {
+    keys: Record<string, boolean> = {}
+    constructor() {
         window.addEventListener("keydown", (e) => {
             this.keys[e.code] = true;
         });
@@ -11,7 +11,12 @@ export class InputsManager{
         });
     }
 
-    isPressed(code : string){
+    isPressed(code: string) {
         return this.keys[code];
+    }
+
+    dispose() {
+        window.onkeydown = null;
+        window.onkeyup = null;
     }
 }

@@ -31,7 +31,7 @@ const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
                     }
                 }}
             >
-                <div>
+                <div >
                     <Tabs />
                     {
                         settings.selectedTab == TabsEnum.Settings ? <SettingsTab toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
