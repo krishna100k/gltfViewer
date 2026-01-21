@@ -7,8 +7,9 @@ import { Box3, Clock, Mesh, MeshStandardMaterial, Object3D, Vector2, Vector3, ty
 import { OrbitController } from "./controls/orbitcontroller";
 import { WalkController } from "./controls/walkController";
 import { RaycasterManager } from "./intersections/raycasterManager";
-import { configStore } from "../utils/configStore";
 import { SolarSystem } from "./solarSystem";
+import { store } from "../redux/store";
+import { setSettings } from "../redux/slices/settingsSlice";
 
 
 export class Viewer {
@@ -31,6 +32,10 @@ export class Viewer {
     clickedPointerCoords = new Vector2();
 
     selectedObject?: Object3D
+
+    get settings() {
+        return store.getState().settings;
+    }
 
 
     constructor(container: HTMLElement) {
@@ -69,7 +74,7 @@ export class Viewer {
         }
     }
 
-    loadModel(url: string, ext: string, setLoadingModelState : (loading : boolean) => void) {
+    loadModel(url: string, ext: string, setLoadingModelState: (loading: boolean) => void) {
         this.loaderManager.load(url, ext, (gltf: GLTF) => {
             // this.solarSystemManager?.clear();
             if (this.loadedModel) this.sceneManager.scene.remove(this.loadedModel);
@@ -89,6 +94,7 @@ export class Viewer {
 
     exitWalkMode = () => {
         this.walkMode = false;
+        store.dispatch(setSettings({sidenavOpen : true}));
         this.orbitController.setEnabled(!this.walkMode);
         this.walkController.setEnabled(this.walkMode);
     }
@@ -111,7 +117,7 @@ export class Viewer {
 
         const maxSize = Math.max(size.x, size.y, size.z);
 
-        configStore.speed = maxSize * configStore.autoSppedCalculationPercentage;
+        store.dispatch(setSettings({speed : maxSize * this.settings.autoSppedCalculationPercentage}))
 
         this.cameraManager.camera.position.set(
             0,
@@ -162,10 +168,10 @@ export class Viewer {
             const clone = mat.clone();
 
             if (clone?.emissive) {
-                clone.emissive.set(configStore.selectionColor);
+                clone.emissive.set(this.settings.selectionColor);
                 clone.emissiveIntensity = 1;
             } else if (clone?.color) {
-                clone.color.set(configStore.selectionColor);
+                clone.color.set(this.settings.selectionColor);
             } else {
                 clone.opacity = 0.85;
                 clone.transparent = true;

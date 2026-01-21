@@ -2,7 +2,7 @@ import { PointerLockControls } from "three/examples/jsm/Addons.js";
 import type { CameraManager } from "../cameraManager";
 import { InputsManager } from "./inputsManager";
 import { Vector3 } from "three";
-import { configStore } from "../../utils/configStore";
+import { store } from "../../redux/store";
 
 export class WalkController {
     controls: PointerLockControls
@@ -11,8 +11,12 @@ export class WalkController {
 
     velocity = new Vector3();
     direction = new Vector3();
-    inputSpeed = configStore.speed;
-    speed = configStore.speed;
+    inputSpeed = this.settings.speed;
+    speed = this.settings.speed;
+
+    get settings() {
+        return store.getState().settings;
+    }
 
     constructor(cameraManager: CameraManager, container: HTMLElement) {
         this.controls = new PointerLockControls(cameraManager.camera, container);
@@ -26,7 +30,7 @@ export class WalkController {
 
     update(delta: number) {
         this.direction.set(0,0,0);
-        if (this.inputsManager.isPressed("KeyW")) this.direction.z += 1;
+        if (this.inputsManager.isPressed("KeyW")) {debugger;this.direction.z += 1};
         if (this.inputsManager.isPressed("KeyS")) this.direction.z -= 1;
         if (this.inputsManager.isPressed("KeyA")) this.direction.x -= 1;
         if (this.inputsManager.isPressed("KeyD")) this.direction.x += 1;

@@ -1,11 +1,14 @@
 import * as THREE from "three";
-import { configStore } from "../utils/configStore";
+import { store } from "../redux/store";
 
-export class SceneManager{
-    scene : THREE.Scene
-    constructor(){
+export class SceneManager {
+    scene: THREE.Scene
+    get settings() {
+        return store.getState().settings;
+    }
+    constructor() {
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(configStore.backgroundColor);
+        this.scene.background = new THREE.Color(this.settings.backgroundColor);
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         this.scene.add(ambientLight);
@@ -15,7 +18,7 @@ export class SceneManager{
         this.scene.add(directionalLight);
     }
 
-    add(object : THREE.Object3D){
+    add(object: THREE.Object3D) {
         this.scene.add(object)
     }
 }

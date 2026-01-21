@@ -16,7 +16,7 @@ const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
     return (
         <>
             <Drawer
-                open={true}
+                open={settings.sidenavOpen}
                 hideBackdrop
                 variant="persistent"
                 anchor="right"
@@ -25,7 +25,8 @@ const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
                         sx: {
                             backgroundColor: "#0F0F0F",
                             color: "white",
-                            width: "350px"
+                            width: "350px",
+                            maxWidth : "350px"
                         }
                     }
                 }}

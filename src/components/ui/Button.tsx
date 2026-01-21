@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({ text, width = "auto", height = "auto", 
             height : height,
             padding : padding,
         }}
-        className="bg-[#1D3049] hover:bg-[#24436C] cursor-pointer transition-all duration-150"
+        className="bg-[#1D3049] hover:bg-[#24436C] cursor-pointer transition-all duration-150 rounded-xs"
         onClick={clickHandler}
         >
             {text}

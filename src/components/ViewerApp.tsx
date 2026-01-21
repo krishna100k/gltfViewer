@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react"
 import { Viewer } from "../three/viewer";
-import { configStore } from "../utils/configStore";
 import Loader from "./ui/Loader";
 import Sidenav from "./ui/Sidenav";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../redux/store";
+import { setSettings } from "../redux/slices/settingsSlice";
 
 
 const ViewerApp = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const viewerRef = useRef<Viewer>(null);
-    const [config, setConfig] = useState({...configStore});
     const [loadingModel, setLoadingModel] = useState<boolean>(false);
-
     const uploadFileInputRef = useRef<HTMLInputElement>(null);
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
         if (!viewerRef.current && containerRef.current) {
@@ -19,27 +20,10 @@ const ViewerApp = () => {
         }
     }, [])
 
-    useEffect(() => {
-        if(!loadingModel){
-            if(viewerRef.current){
-                setConfig(() => {
-                    return {...configStore}
-                })
-            } 
-        }
-    }, [loadingModel])
 
     const toggleWalkMode = () => {
+        dispatch(setSettings({sidenavOpen : false}));
         viewerRef.current?.toggleWalkMode();
-    }
-
-    const onInputSpeedChange = (e : ChangeEvent<HTMLInputElement>) => {
-        const speed = Number(e.target.value);
-        setConfig((prev) => {
-            return {...prev, speed : speed}
-        });
-        configStore.speed = speed;
-        viewerRef.current?.setInputSpeed(speed);
     }
 
     const onModelUpload = (e : ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +50,6 @@ const ViewerApp = () => {
     return (
         <>
             {loadingModel && <Loader />} 
-            <input min={1} value={configStore.speed} onChange={onInputSpeedChange} type="number" style={{position : 'absolute', left : "4rem"}} />
             <input ref={uploadFileInputRef} type="file" style={{position : 'absolute', left : "15rem", display : 'none'}} onChange={onModelUpload} />
             <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
             <div ref={containerRef} style={{
