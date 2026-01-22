@@ -14,6 +14,12 @@ export const initialState = {
     near: 0.1,
     far: 1000
   },
+  selectedObject : {
+    id : null as null | string,
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 0, y: 0, z: 0 }
+  }
 }
 
 export type Settings = typeof initialState;

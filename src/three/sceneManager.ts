@@ -6,7 +6,6 @@ export class SceneManager {
     get settings() {
         return store.getState().settings;
     }
-    unsubscribe !: () => void;
     constructor() {
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(this.settings.backgroundColor);
@@ -17,10 +16,6 @@ export class SceneManager {
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 10, 5);
         this.scene.add(directionalLight);
-
-        store.subscribe(() => {
-            this.updateBackgroundColor();
-        })
     }
 
     add(object: THREE.Object3D) {
@@ -29,11 +24,5 @@ export class SceneManager {
 
     updateBackgroundColor = () => {
         this.scene.background = new THREE.Color(this.settings.backgroundColor);
-    }
-
-    dispose() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
     }
 }

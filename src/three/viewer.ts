@@ -37,6 +37,8 @@ export class Viewer {
         return store.getState().settings;
     }
 
+    isApplyingCameraSettingsFromStore = false;
+
 
     constructor(container: HTMLElement) {
         this.sceneManager = new SceneManager();
@@ -78,6 +80,16 @@ export class Viewer {
                 }
             }))
         })
+
+        store.subscribe(() => {
+            if(this.isApplyingCameraSettingsFromStore) return;
+
+            this.isApplyingCameraSettingsFromStore = true;
+            this.applyCameraSettings();
+            this.sceneManager.updateBackgroundColor();
+            this.isApplyingCameraSettingsFromStore = false;
+        })
+
     }
 
 
@@ -159,6 +171,7 @@ export class Viewer {
             currentObjectmesh.material = currentObjectmesh.userData?.["originalMaterial"];
             delete currentObjectmesh.userData.originalMaterial;;
             this.selectedObject = undefined;
+            this.removeObjectSelectionToStore();
         }
 
         if (intersectedObjects.length > 0) {
@@ -200,12 +213,101 @@ export class Viewer {
             ? mesh.material.map(m => highlight(m as MeshStandardMaterial))
             : highlight(mesh.material as MeshStandardMaterial);
 
+        this.addObjectSelectionToStore(mesh);
+    }
+
+    applyCameraSettings = () => {
+        const camera = this.settings.camera;
+        const cam = this.cameraManager.camera;
+        const target = this.orbitController.controls.target;
+
+        target.set(
+            camera.target.x,
+            camera.target.y,
+            camera.target.z
+        );
+        // Prevent camera == target
+        const EPS = 1;
+        if (
+            camera.position.x === target.x &&
+            camera.position.y === target.y &&
+            camera.position.z === target.z
+        ) {
+            cam.position.set(
+                target.x,
+                target.y,
+                target.z + EPS
+            );
+        } else {
+            cam.position.set(
+                camera.position.x,
+                camera.position.y,
+                camera.position.z
+            );
+        }
+
+        cam.near = camera.near;
+        cam.far = camera.far;
+        cam.fov = camera.fov;
+        cam.updateProjectionMatrix();
+
+        this.orbitController.controls.update();
+    };
+
+    addObjectSelectionToStore(mesh: Mesh) {
         this.selectedObject = mesh;
+
+        store.dispatch(setSettings({
+            selectedObject:
+            {
+                id: mesh.uuid,
+                position: {
+                    x: mesh.position.x,
+                    y: mesh.position.y,
+                    z: mesh.position.z
+                },
+                rotation: {
+                    x: mesh.rotation.x,
+                    y: mesh.rotation.y,
+                    z: mesh.rotation.z
+                },
+                scale: {
+                    x: mesh.scale.x,
+                    y: mesh.scale.y,
+                    z: mesh.scale.z
+                }
+            }
+        }));
+    }
+
+    removeObjectSelectionToStore() {
+        this.selectedObject = undefined;
+
+        store.dispatch(setSettings({
+            selectedObject:
+            {
+                id: null,
+                position: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                rotation: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                },
+                scale: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                }
+            }
+        }));
     }
 
 
     dispose() {
-        this.sceneManager.dispose();
         this.rendererManager.dispose();
     }
 }
