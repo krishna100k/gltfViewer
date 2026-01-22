@@ -6,7 +6,14 @@ export const initialState = {
   selectionColor: 2310510,
   backgroundColor: 0,
   autoSppedCalculationPercentage : 0.03,
-  sidenavOpen : true
+  sidenavOpen : true,
+  camera: {
+    position: { x: 0, y: 2, z: 5 },
+    target:   { x: 0, y: 0, z: 0 },
+    fov: 60,
+    near: 0.1,
+    far: 1000
+  },
 }
 
 export type Settings = typeof initialState;

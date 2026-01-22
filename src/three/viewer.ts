@@ -49,12 +49,35 @@ export class Viewer {
         this.orbitController = new OrbitController(this.cameraManager, container);
         this.walkController = new WalkController(this.cameraManager, container);
 
-        this.walkController.controls.addEventListener('unlock', this.exitWalkMode);
         this.animate();
 
         const canvas = this.rendererManager.renderer.domElement;
+
         canvas.addEventListener("pointerdown", this.onPointerDown);
         window.addEventListener("pointerup", this.onPointerUp);
+        this.walkController.controls.addEventListener('unlock', this.exitWalkMode);
+        this.orbitController.controls.addEventListener('end', () => {
+            const camera = this.cameraManager.getCameraSettings();
+            const target = this.orbitController.getTarget();
+
+            store.dispatch(setSettings({
+                camera: {
+                    position: {
+                        x: camera.position.x,
+                        y: camera.position.y,
+                        z: camera.position.z
+                    },
+                    target: {
+                        x: target.x,
+                        y: target.y,
+                        z: target.z
+                    },
+                    near: camera.near,
+                    far: camera.far,
+                    fov: camera.fov
+                }
+            }))
+        })
     }
 
 

@@ -4,7 +4,7 @@ import DividerWithText from "../DividerWithText"
 import OrbitInput from "../OrbitInput"
 import { type AppDispatch, type RootState } from "../../../redux/store"
 import { hexToNumber, numberToHex } from "../../../utils/conversion"
-import type { ChangeEvent } from "react"
+import { useEffect, type ChangeEvent } from "react"
 import { setSettings } from "../../../redux/slices/settingsSlice"
 
 interface SettingsTabProps {
@@ -38,7 +38,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ toggleWalkMode, onUploadClick
         <Button text={"Walk"} width="100%" clickHandler={toggleWalkMode} />
       </div>
       <DividerWithText text={"General"} />
-      <div className="mt-3 flex flex-col gap-3">
+      <div className="mt-3 mb-3 flex flex-col gap-3">
         <div className="flex justify-start items-center gap-3">
           <div className="w-[70%]">
             <OrbitInput type="number" height="32px" width="100%" value={settings.speed.toString()} onChangeHandler={onWalkSpeedChange} />
@@ -58,6 +58,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ toggleWalkMode, onUploadClick
           <p>Selection</p>
         </div>
       </div>
+      <DividerWithText text={"Camera"} />
     </div>
   )
 }

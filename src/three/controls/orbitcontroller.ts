@@ -14,4 +14,8 @@ export class OrbitController {
     update() {
         this.controls.update();
     }
+
+    getTarget(){
+        return this.controls.target.clone();
+    }
 }
