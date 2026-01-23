@@ -87,6 +87,7 @@ export class Viewer {
             this.isApplyingCameraSettingsFromStore = true;
             this.applyCameraSettings();
             this.sceneManager.updateBackgroundColor();
+            this.updateSelectedObject();
             this.isApplyingCameraSettingsFromStore = false;
         })
 
@@ -304,6 +305,16 @@ export class Viewer {
                 }
             }
         }));
+    }
+
+    updateSelectedObject(){
+        const position = this.settings.selectedObject.position;
+        const rotation = this.settings.selectedObject.rotation;
+        const scale = this.settings.selectedObject.scale;
+
+        this.selectedObject?.position.set(position.x, position.y, position.z);
+        this.selectedObject?.rotation.set(rotation.x, rotation.y, rotation.z);
+        this.selectedObject?.scale.set(scale.x, scale.y, scale.z);
     }
 
 

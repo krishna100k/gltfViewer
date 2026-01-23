@@ -92,6 +92,35 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ toggleWalkMode, onUploadClick
     dispatch(setSettings({ camera: camera }));
   }
 
+  const onSelectedObjectChange = (position : null | Record<string, number>, rotation : null | Record<string, number>, scale : null | Record<string, number>) => {
+    if(!settings.selectedObject.id) return;
+
+    const selectedObject = {
+      id : settings.selectedObject.id,
+      position: { ...settings.selectedObject.position },
+      rotation: { ...settings.selectedObject.rotation },
+      scale : { ...settings.selectedObject.scale }
+    };
+
+    if(position){
+      if(position?.x) selectedObject.position.x = position.x;
+      if(position?.y) selectedObject.position.y = position.y;
+      if(position?.z) selectedObject.position.z = position.z;
+    }
+    if(rotation){
+      if(rotation?.x) selectedObject.rotation.x = rotation.x;
+      if(rotation?.y) selectedObject.rotation.y = rotation.y;
+      if(rotation?.z) selectedObject.rotation.z = rotation.z;
+    }
+    if(scale){
+      if(scale?.x) selectedObject.scale.x = scale.x;
+      if(scale?.y) selectedObject.scale.y = scale.y;
+      if(scale?.z) selectedObject.scale.z = scale.z;
+    }
+
+    dispatch(setSettings({ selectedObject: selectedObject }));
+  }
+
   return (
     <div className=" max-w-full p-2">
       <div className="flex items-center justify-center gap-2 mt-3 mb-3">
@@ -164,25 +193,25 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ toggleWalkMode, onUploadClick
             </div>
             <div className="flex items-start gap-3">
               <div className="w-[70%] flex gap-2">
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.x.toString()} onChangeHandler={(e) => onCameraPositionChange(e.target.value, null, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.y.toString()} onChangeHandler={(e) => onCameraPositionChange(null, e.target.value, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.z.toString()} onChangeHandler={(e) => onCameraPositionChange(null, null, e.target.value)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.x.toString()} onChangeHandler={(e) => onSelectedObjectChange({x : Number(e.target.value)}, null, null)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.y.toString()} onChangeHandler={(e) => onSelectedObjectChange({y : Number(e.target.value)}, null, null)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.position.z.toString()} onChangeHandler={(e) => onSelectedObjectChange({z : Number(e.target.value)}, null, null)} />
               </div>
               <p>Position</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-[70%] flex gap-2">
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.x.toString()} onChangeHandler={(e) => onCameraTargetChange(e.target.value, null, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.y.toString()} onChangeHandler={(e) => onCameraTargetChange(null, e.target.value, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.z.toString()} onChangeHandler={(e) => onCameraTargetChange(null, null, e.target.value)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.x.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, {x : Number(e.target.value)}, null)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.y.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, {y : Number(e.target.value)}, null)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.rotation.z.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, {z : Number(e.target.value)}, null)} />
               </div>
               <p>Rotation</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-[70%] flex gap-2">
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.x.toString()} onChangeHandler={(e) => onCameraTargetChange(e.target.value, null, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.y.toString()} onChangeHandler={(e) => onCameraTargetChange(null, e.target.value, null)} />
-                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.z.toString()} onChangeHandler={(e) => onCameraTargetChange(null, null, e.target.value)} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.x.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, null, {x : Number(e.target.value)})} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.y.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, null, {y : Number(e.target.value)})} />
+                <OrbitInput type="number" height="32px" width="100%" value={settings.selectedObject.scale.z.toString()} onChangeHandler={(e) => onSelectedObjectChange(null, null, {z : Number(e.target.value)})} />
               </div>
               <p>Scale</p>
             </div>
