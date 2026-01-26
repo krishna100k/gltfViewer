@@ -10,6 +10,8 @@ import { RaycasterManager } from "./intersections/raycasterManager";
 import { SolarSystem } from "./solarSystem";
 import { store } from "../redux/store";
 import { setSettings } from "../redux/slices/settingsSlice";
+import { TransformController } from "./controls/transformController";
+import { InputsManager } from "./controls/inputsManager";
 
 
 export class Viewer {
@@ -19,13 +21,15 @@ export class Viewer {
     raycastermanager !: RaycasterManager
     loaderManager: LoaderManager
     solarSystemManager !: SolarSystem
+    inputsManager !: InputsManager
 
     loadedModel?: Group
 
     //controls
     walkMode = false;
-    orbitController: OrbitController
-    walkController: WalkController
+    orbitController !: OrbitController
+    walkController !: WalkController
+    transformController !: TransformController
 
     clock: Clock = new Clock();
 
@@ -47,9 +51,12 @@ export class Viewer {
         this.loaderManager = new LoaderManager();
         this.raycastermanager = new RaycasterManager(this.cameraManager, container);
         this.solarSystemManager = new SolarSystem(this.sceneManager);
+        
 
         this.orbitController = new OrbitController(this.cameraManager, container);
-        this.walkController = new WalkController(this.cameraManager, container);
+        this.inputsManager = new InputsManager();
+        this.walkController = new WalkController(this.cameraManager, container, this.inputsManager);
+        this.transformController = new TransformController(this.cameraManager, this.rendererManager, this.sceneManager, this.orbitController, this.inputsManager);
 
         this.animate();
 
@@ -79,6 +86,29 @@ export class Viewer {
                     fov: camera.fov
                 }
             }))
+        })
+
+        this.transformController.controls.addEventListener("dragging-changed", (event) => {
+            this.orbitController.controls.enabled = !event.value;
+        });
+
+        this.transformController.controls.addEventListener("mouseUp", () => {
+            if (!this.selectedObject) return;
+            this.addObjectSelectionToStore(this.selectedObject as Mesh)
+        })
+
+        window.addEventListener("keydown", (e) => {
+            switch (e.key.toLowerCase()) {
+                case "w":
+                    this.transformController.setMode("translate");
+                    break;
+                case "e":
+                    this.transformController.setMode("rotate");
+                    break;
+                case "r":
+                    this.transformController.setMode("scale");
+                    break;
+            }
         })
 
         store.subscribe(() => {
@@ -125,13 +155,40 @@ export class Viewer {
         this.walkMode = true
         this.orbitController.setEnabled(!this.walkMode);
         this.walkController.setEnabled(this.walkMode);
+        
+        this.transformController.detachObject();
     }
 
     exitWalkMode = () => {
+
+        const cam = this.cameraManager.camera;
+        const position = cam.position.clone();
+        const direction = new Vector3();
+        cam.getWorldDirection(direction);
+        const target = position.clone().add(direction.multiplyScalar(10));
+        store.dispatch(setSettings({
+            camera: {
+                position: {
+                    x: position.x,
+                    y: position.y,
+                    z: position.z
+                },
+                target: {
+                    x: target.x,
+                    y: target.y,
+                    z: target.z
+                },
+                near: cam.near,
+                far: cam.far,
+                fov: cam.fov
+            },
+            sidenavOpen : true
+        }));
+
+        this.applyCameraSettings();
+
         this.walkMode = false;
-        store.dispatch(setSettings({ sidenavOpen: true }));
         this.orbitController.setEnabled(!this.walkMode);
-        this.orbitController.update();
         this.walkController.setEnabled(this.walkMode);
     }
 
@@ -166,7 +223,6 @@ export class Viewer {
     onPointerUp = (e: MouseEvent) => {
         if (e.clientX != this.clickedPointerCoords.x || e.clientY != this.clickedPointerCoords.y) return;
         const intersectedObjects = this.raycastermanager.cast(e, this.sceneManager.scene.children);
-
         if (this.selectedObject) {
             const currentObjectmesh = this.selectedObject as Mesh;
             currentObjectmesh.material = currentObjectmesh.userData?.["originalMaterial"];
@@ -174,9 +230,10 @@ export class Viewer {
             this.selectedObject = undefined;
             this.removeObjectSelectionToStore();
         }
-
         if (intersectedObjects.length > 0) {
             this.highlightObject(intersectedObjects[0].object);
+        }else{
+            this.transformController.detachObject();
         }
     }
 
@@ -214,7 +271,10 @@ export class Viewer {
             ? mesh.material.map(m => highlight(m as MeshStandardMaterial))
             : highlight(mesh.material as MeshStandardMaterial);
 
+        this.selectedObject = mesh;
         this.addObjectSelectionToStore(mesh);
+        
+        this.transformController.attachObject(mesh);    
     }
 
     applyCameraSettings = () => {
@@ -251,13 +311,10 @@ export class Viewer {
         cam.far = camera.far;
         cam.fov = camera.fov;
         cam.updateProjectionMatrix();
-
         this.orbitController.controls.update();
     };
 
     addObjectSelectionToStore(mesh: Mesh) {
-        this.selectedObject = mesh;
-
         store.dispatch(setSettings({
             selectedObject:
             {

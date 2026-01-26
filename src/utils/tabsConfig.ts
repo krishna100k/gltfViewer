@@ -1,6 +1,6 @@
 export const TabsEnum = {
   Settings: "Settings",
-  Scene : "Scene",
+  // Scene : "Scene",
   DefaultModels: "Default Models"
 } as const;
 

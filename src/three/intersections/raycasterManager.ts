@@ -24,6 +24,7 @@ export class RaycasterManager{
 
         this.raycaster.setFromCamera(this.mouse, this.cameraManager.camera);
 
-        return this.raycaster.intersectObjects(objects);
+        // avoiding transform controls gizmo object by filtering.
+        return this.raycaster.intersectObjects(objects).filter(f => !f.object.userData?.isTransFormControlsObject);
     }
 }

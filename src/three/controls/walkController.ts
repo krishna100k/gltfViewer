@@ -8,7 +8,7 @@ import { Constants } from "../../utils/constants";
 export class WalkController {
     controls: PointerLockControls
     enabled = false;
-    inputsManager: InputsManager
+    inputsManager !: InputsManager
 
     velocity = new Vector3();
     direction = new Vector3();
@@ -17,9 +17,9 @@ export class WalkController {
         return store.getState().settings;
     }
 
-    constructor(cameraManager: CameraManager, container: HTMLElement) {
+    constructor(cameraManager: CameraManager, container: HTMLElement, inputsManager : InputsManager) {
         this.controls = new PointerLockControls(cameraManager.camera, container);
-        this.inputsManager = new InputsManager();
+        this.inputsManager = inputsManager
     }
 
     setEnabled(enabled: boolean) {

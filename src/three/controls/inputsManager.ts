@@ -2,6 +2,10 @@
 export class InputsManager {
     keys: Record<string, boolean> = {}
     constructor() {
+        this.addInputsEventListener();
+    }
+
+    addInputsEventListener = () => {
         window.addEventListener("keydown", (e) => {
             this.keys[e.code] = true;
         });

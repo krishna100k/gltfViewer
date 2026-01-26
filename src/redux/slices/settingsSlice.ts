@@ -3,7 +3,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 export const initialState = {
   selectedTab : "Settings",
   speed: 4,
-  selectionColor: 2310510,
+  // selectionColor: 2310510,
+  selectionColor: 16711680,
   backgroundColor: 0,
   autoSppedCalculationPercentage : 0.03,
   sidenavOpen : true,
