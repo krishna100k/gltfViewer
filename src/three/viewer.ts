@@ -288,7 +288,7 @@ export class Viewer {
             camera.target.z
         );
         // Prevent camera == target
-        const EPS = 1;
+        const EPS = .1;
         if (
             camera.position.x === target.x &&
             camera.position.y === target.y &&

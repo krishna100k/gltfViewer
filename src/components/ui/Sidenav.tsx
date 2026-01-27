@@ -9,9 +9,11 @@ import DefaultModels from "./Tabs/DefaultModels"
 interface SideNavProps {
     toggleWalkMode: () => void
     onUploadClick : () => void
+    loadModel : (url: string, ext: string, setLoadingModelState: (loading: boolean) => void) => void
+    setLoadingModelState: (loading: boolean) => void
 }
 
-const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
+const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick, loadModel, setLoadingModelState }) => {
     const settings = useSelector((state: RootState) => state.settings)
     return (
         <>
@@ -31,12 +33,12 @@ const Sidenav: React.FC<SideNavProps> = ({ toggleWalkMode, onUploadClick }) => {
                     }
                 }}
             >
-                <div >
+                <div>
                     <Tabs />
                     {
                         settings.selectedTab == TabsEnum.Settings ? <SettingsTab toggleWalkMode={toggleWalkMode} onUploadClick = {onUploadClick} />
                             :
-                        settings.selectedTab == TabsEnum.DefaultModels && <DefaultModels />
+                        settings.selectedTab == TabsEnum.DefaultModels && <DefaultModels loadModel = {loadModel} setLoadingModelState = {setLoadingModelState} />
                     }
                 </div>
             </Drawer>

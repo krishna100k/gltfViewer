@@ -37,6 +37,10 @@ const ViewerApp = () => {
         const ext = splittedFileName[splittedFileName.length - 1];
 
         setLoadingModel(true);
+        loadModel(url, ext, setLoadingModelState)
+    }
+
+    const loadModel = (url: string, ext: string, setLoadingModelState: (loading : boolean) => void) => {
         viewerRef.current?.loadModel(url, ext, setLoadingModelState);
     }
 
@@ -52,7 +56,7 @@ const ViewerApp = () => {
         <>
             {loadingModel && <Loader />}
             <input ref={uploadFileInputRef} type="file" style={{ position: 'absolute', left: "15rem", display: 'none' }} onChange={onModelUpload} />
-            <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick={onUploadClick} />
+            <Sidenav toggleWalkMode={toggleWalkMode} onUploadClick={onUploadClick} loadModel = {loadModel} setLoadingModelState = {setLoadingModelState}  />
             <div ref={containerRef} style={{
                 width: "100%",
                 height: "100%",
