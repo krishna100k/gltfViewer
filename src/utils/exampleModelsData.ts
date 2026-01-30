@@ -43,5 +43,10 @@ export const exampleModelData = [
       name: "Staircase",
       path: "/models/Staircase.glb",
       image: "/modelImages/Staircase.png"
+    },
+    {
+      name: "Palace",
+      path: "/models/Palace.glb",
+      image: "/modelImages/Palace.png"
     }
   ];
